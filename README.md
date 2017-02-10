@@ -23,6 +23,10 @@ dependencies {
 }
 ```
 
+## Usage 用法
+
+Please watch [CurrentActivity](https://github.com/Omico/CurrentActivity)
+
 ## License 许可证
 
 [![license](https://img.shields.io/github/license/Omico/FloatWindow.svg?style=flat-square)](https://github.com/Omico/FloatWindow/blob/master/LICENSE)
