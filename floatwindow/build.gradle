@@ -31,7 +31,7 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 1
+        versionCode getVersionCodeFromGit()
         versionName version
     }
     buildTypes {
@@ -40,6 +40,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+}
+
+static def getVersionCodeFromGit() {
+    return ('git rev-list HEAD --count').execute().text.trim().toInteger()
 }
 
 Properties properties = new Properties()
@@ -108,6 +112,7 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
 }
+
 artifacts {
     archives javadocJar
     archives sourcesJar
