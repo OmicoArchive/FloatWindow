@@ -147,7 +147,7 @@ public class FloatWindow {
                     case MotionEvent.ACTION_UP:
                         int endX = (int) event.getX();
                         int endY = (int) event.getY();
-                        if (Math.abs(moveX - endX) <= deviationAmount || Math.abs(moveY - endY) <= deviationAmount) {
+                        if (Math.abs(moveX - endX) <= deviationAmount && Math.abs(moveY - endY) <= deviationAmount) {
                             if (mOnClickListener != null) {
                                 mView.setOnClickListener(mOnClickListener);
                             }
