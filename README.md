@@ -6,7 +6,7 @@
 
 ```
 dependencies {
-    compile 'me.omico.support.widget:floatwindow:1.0.0'
+    compile 'me.omico.support.widget:floatwindow:1.1.0'
 }
 ```
 
