@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package me.omico.support.widget.floatwindow;
+package me.omico.support.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -35,15 +37,14 @@ public class FloatWindow {
     private View.OnClickListener mOnClickListener;
     private View.OnLongClickListener mOnLongClickListener;
 
-    public FloatWindow(Context context) {
+    public FloatWindow(@NonNull Context context) {
         this.mContext = context;
     }
 
-    public FloatWindow init(View view, WindowManager.LayoutParams layoutParams) {
-        this.mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+    public FloatWindow init(@NonNull View view, @NonNull WindowManager.LayoutParams layoutParams) {
+        this.mWindowManager = getWindowManager(mContext);
         this.mView = view;
         this.mLayoutParams = layoutParams;
-
         if (mOnTouchListener != null) {
             mView.setOnTouchListener(mOnTouchListener);
         } else {
@@ -52,13 +53,13 @@ public class FloatWindow {
         return this;
     }
 
-    public FloatWindow init(View view, WindowManager.LayoutParams layoutParams, int gravity) {
+    public FloatWindow init(@NonNull View view, @NonNull WindowManager.LayoutParams layoutParams, int gravity) {
         this.init(view, layoutParams);
         this.setLayoutParamsGravity(gravity);
         return this;
     }
 
-    public FloatWindow init(View view) {
+    public FloatWindow init(@NonNull View view) {
         this.init(view, getLayoutParams());
         return this;
     }
@@ -74,12 +75,12 @@ public class FloatWindow {
         return this;
     }
 
-    public FloatWindow setLayoutParams(WindowManager.LayoutParams layoutParams) {
+    public FloatWindow setLayoutParams(@NonNull WindowManager.LayoutParams layoutParams) {
         this.mLayoutParams = layoutParams;
         return this;
     }
 
-    public FloatWindow setLayoutParams(WindowManager.LayoutParams layoutParams, int gravity) {
+    public FloatWindow setLayoutParams(@NonNull WindowManager.LayoutParams layoutParams, int gravity) {
         this.mLayoutParams = layoutParams;
         this.setLayoutParamsGravity(gravity);
         return this;
@@ -98,24 +99,25 @@ public class FloatWindow {
         return mLayoutParams.gravity;
     }
 
-    public void updateFloatWindowPosition(int x, int y, int currentX, int currentY) {
-        mLayoutParams.x = x - currentX;
-        mLayoutParams.y = y - currentY;
-        mWindowManager.updateViewLayout(mView, mLayoutParams);
+    public FloatWindow updateFloatWindowPosition(int x, int y, int currentX, int currentY) {
+        this.mLayoutParams.x = x - currentX;
+        this.mLayoutParams.y = y - currentY;
+        this.mWindowManager.updateViewLayout(mView, mLayoutParams);
+        return this;
     }
 
     public FloatWindow setFloatWindowOnTouchListener(View.OnTouchListener onTouchListener) {
-        mOnTouchListener = onTouchListener;
+        this.mOnTouchListener = onTouchListener;
         return this;
     }
 
     public FloatWindow setOnFloatWindowClickListener(View.OnClickListener onClickListener) {
-        mOnClickListener = onClickListener;
+        this.mOnClickListener = onClickListener;
         return this;
     }
 
     public FloatWindow setOnFloatWindowLongClickListener(View.OnLongClickListener onLongClickListener) {
-        mOnLongClickListener = onLongClickListener;
+        this.mOnLongClickListener = onLongClickListener;
         return this;
     }
 
@@ -128,8 +130,15 @@ public class FloatWindow {
         return this;
     }
 
+    private WindowManager getWindowManager(@NonNull Context context) {
+        if (mWindowManager == null)
+            mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        return mWindowManager;
+    }
+
     private void setDefaultFloatWindowGestureListener() {
-        mView.setOnTouchListener(new View.OnTouchListener() {
+        this.mView.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 int startX = (int) event.getRawX();
@@ -148,12 +157,10 @@ public class FloatWindow {
                         int endX = (int) event.getX();
                         int endY = (int) event.getY();
                         if (Math.abs(moveX - endX) <= deviationAmount && Math.abs(moveY - endY) <= deviationAmount) {
-                            if (mOnClickListener != null) {
+                            if (mOnClickListener != null)
                                 mView.setOnClickListener(mOnClickListener);
-                            }
-                            if (mOnLongClickListener != null) {
+                            if (mOnLongClickListener != null)
                                 mView.setOnLongClickListener(mOnLongClickListener);
-                            }
                         }
                         updateFloatWindowPosition(startX, startY, moveX, moveY);
                         break;
@@ -163,19 +170,33 @@ public class FloatWindow {
         });
     }
 
+    private void checkException(@NonNull String method) {
+        String tag = getClass().getSimpleName() + "." + method + ": ";
+        if (mView == null)
+            throw new RuntimeException(tag + "View should not be null.");
+        if (mWindowManager == null)
+            throw new RuntimeException(tag + "WindowManager should not be null.");
+        if (mLayoutParams == null)
+            throw new RuntimeException(tag + "WindowManager.LayoutParams should not be null.");
+    }
+
     public void attach() {
+        checkException("attach()");
         mWindowManager.addView(mView, mLayoutParams);
     }
 
     public void detach() {
+        checkException("detach()");
         mWindowManager.removeView(mView);
     }
 
     public void show() {
-        mView.setVisibility(View.VISIBLE);
+        checkException("show()");
+        if (mView.getVisibility() != View.VISIBLE) mView.setVisibility(View.VISIBLE);
     }
 
     public void hide() {
-        mView.setVisibility(View.GONE);
+        checkException("hide()");
+        if (mView.getVisibility() != View.GONE) mView.setVisibility(View.GONE);
     }
 }

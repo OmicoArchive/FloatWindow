@@ -16,10 +16,11 @@
 
 buildscript {
     repositories {
+        google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.0.0-beta7'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
     }
@@ -27,10 +28,57 @@ buildscript {
 
 allprojects {
     repositories {
+        google()
         jcenter()
     }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+ext {
+    COMPILE_SDK_VERSION = 26
+    BUILD_TOOLS_VERSION = "26.0.2"
+    MIN_SDK_VERSION = 19
+    TARGET_SDK_VERSION = COMPILE_SDK_VERSION
+    VERSION_CODE = getVersionCode()
+    VERSION_NAME = getVersionName()
+
+    ANDROID_SUPPORT_LIBRARY_VERSION = "26.1.0"
+
+    BINTRAY_REPO = 'maven'
+
+    SITE_URL = 'https://github.com/OmicoAndroidLibrary/FloatWindow'
+    GIT_URL = 'https://github.com/OmicoAndroidLibrary/FloatWindow.git'
+
+    GROUP = 'me.omico.support.widget'
+    POM_PACKAGING = 'aar'
+
+    POM_DESCRIPTION = 'Android float window widget'
+
+    POM_LICENCE = ['Apache-2.0']
+    POM_LICENCE_NAME = 'The Apache Software License, Version 2.0'
+    POM_LICENCE_URL = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    POM_LICENCE_DIST = 'repo'
+
+    POM_DEVELOPER_ID = 'omico'
+    POM_DEVELOPER_NAME = 'Omico Yuwen'
+    POM_DEVELOPER_EMAIL = 'omico@qq.com'
+
+    POM_NAME = 'float-window'
+    POM_BINTRAY_NAME = 'float-window'
+    POM_ARTIFACT_ID = 'float-window'
+}
+
+static int getVersionCode() {
+    return readCommand('git rev-list HEAD --count').toInteger()
+}
+
+static String getVersionName() {
+    return readCommand('git describe --tags --dirty')
+}
+
+static def readCommand(String cmd) {
+    return cmd.execute().text.trim()
 }
